@@ -23,7 +23,7 @@ const About = () => {
           <div className="relative border-l-2 border-[#ccff00] pl-6 py-2">
             <p className="text-gray-300 text-lg md:text-xl leading-relaxed font-light">
               Entry-level <span className="text-white font-bold">AI & ML Engineer</span> with a strong foundation in Deep Learning, Computer Vision and Agentic AI. 
-              Gained hands-on experience in full-stack web development and demonstrated technical proficiency in engineering<span className="text-[#ccff00]">multi-agent architectures and computer vision solutions</span> through comprehensive personal and academic projects. Eager to leverage these skills to contribute to innovative software solutions in a fast-paced development environment.
+              Gained hands-on experience in full-stack web development and demonstrated technical proficiency in engineering <span className="text-[#ccff00]">multi-agent architectures and computer vision solutions</span> through comprehensive personal and academic projects. Eager to leverage these skills to contribute to innovative software solutions in a fast-paced development environment.
             </p>
           </div>
 
