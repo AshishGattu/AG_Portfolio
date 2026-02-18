@@ -90,7 +90,7 @@ const Certifications = () => {
     offset: ["start end", "end start"] 
   });
   
-  const headerScale = useTransform(headerProgress, [0.1, 0.5, 0.8], [1.2, 1, 1.2]);
+  const headerScale = useTransform(headerProgress, [0.1, 0.5, 0.8], [1.75, 1, 1.75]);
   const headerOpacity = useTransform(headerProgress, [0.1, 0.4, 0.6, 0.9], [0, 1, 1, 0]);
   const headerBlur = useTransform(headerProgress, [0.1, 0.5, 0.8], ["10px", "0px", "10px"]);
   const headerY = useTransform(headerProgress, [0.5, 1], [0, -50]);

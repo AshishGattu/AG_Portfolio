@@ -10,13 +10,8 @@ const Hero = () => {
   });
 
   // ANIMATION LOGIC:
-  // 1. Top Cluster moves UP
   const topTextY = useTransform(scrollYProgress, [0, 1], ["0%", "-100%"]);
-  
-  // 2. Bottom Cluster moves DOWN
   const bottomTextY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-
-  // 3. Name Animation
   const heroScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.5]);
   const heroY = useTransform(scrollYProgress, [0, 0.5], ["0%", "50%"]); 
   const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
@@ -32,8 +27,8 @@ const Hero = () => {
       <div className="absolute inset-0 flex flex-col justify-center items-center z-0 opacity-10 select-none pointer-events-none">
         
         {/* TOP GROUP: ARTIFICIAL INTELLIGENCE */}
-        {/* Changed mb-32 to mb-6 (Much closer to center) */}
-        <motion.div style={{ y: topTextY }} className="flex flex-col items-center mb-12 gap-2">
+        {/* FIX: Added 'will-change-transform' to prevent glitching */}
+        <motion.div style={{ y: topTextY }} className="flex flex-col items-center mb-12 gap-2 will-change-transform">
             <h1 className="text-6xl md:text-9xl font-bold text-transparent leading-none" style={{ WebkitTextStroke: "2px white" }}>
                 ARTIFICIAL
             </h1>
@@ -48,8 +43,8 @@ const Hero = () => {
         </h1>
 
         {/* BOTTOM GROUP: MACHINE LEARNING ENGINEER */}
-        {/* Changed mt-32 to mt-6 (Much closer to center) */}
-        <motion.div style={{ y: bottomTextY }} className="flex flex-col items-center mt-12 gap-2">
+        {/* FIX: Added 'will-change-transform' */}
+        <motion.div style={{ y: bottomTextY }} className="flex flex-col items-center mt-12 gap-2 will-change-transform">
             <h1 className="text-6xl md:text-9xl font-bold text-transparent leading-none" style={{ WebkitTextStroke: "2px white" }}>
                 MACHINE
             </h1>
@@ -63,19 +58,20 @@ const Hero = () => {
       {/* --- FOREGROUND CONTENT (Your Name) --- */}
       <motion.div 
         style={{ scale: heroScale, opacity: heroOpacity, y: heroY }}
-        className="z-10 text-center px-4 flex flex-col items-center relative"
+        // FIX: Added 'will-change-transform'
+        className="z-10 text-center px-4 flex flex-col items-center relative will-change-transform"
       >
         <motion.h1 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0, ease: "easeOut" }}
-          className="text-6xl md:text-9xl font-bold tracking-tighter text-white bg-black/60 backdrop-blur-md px-8 py-2 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          // FIX: Removed 'backdrop-blur-md' to reduce lag (it is expensive). 
+          // If you really want it back, change bg-black/80 to bg-black/60 and add backdrop-blur-md, but it costs performance.
+          className="text-6xl md:text-9xl font-bold tracking-tighter text-white bg-black/80 px-8 py-2 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
         >
           ASHISH <span className="text-[#ccff00] drop-shadow-[0_0_35px_rgba(204,255,0,0.4)]">GATTU</span>
         </motion.h1>
       </motion.div>
-
-      {/* --- BOTTOM LINKS (Moved out of center to bottom) --- */}
 
       {/* --- SCROLL DOWN INDICATOR --- */}
       <motion.div 
@@ -98,18 +94,5 @@ const Hero = () => {
     </section>
   );
 };
-
-// Reusable Social Link
-const SocialLink = ({ href, icon }) => (
-  <motion.a 
-    whileHover={{ scale: 1.2, color: "#ccff00" }}
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-3xl text-gray-400 hover:text-white transition-colors duration-300"
-  >
-    {icon}
-  </motion.a>
-);
 
 export default Hero;
