@@ -1,13 +1,13 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { FaCode, FaBrain, FaGlobe, FaTools, FaDatabase } from "react-icons/fa";
+import { FaCode, FaBrain, FaGlobe, FaTools, FaDatabase, FaWrench } from "react-icons/fa";
 
 const skillCategories = [
-  { id: 1, title: "Languages", icon: <FaCode />, description: "The syntactic foundation of my engineering.", skills: ["Python", "Java", "Javascript", "HTML5",] },
-  { id: 2, title: "AI & Machine Learning", icon: <FaBrain />, description: "Building the neural engines of tomorrow.", skills: ["TensorFlow", "PyTorch", "Keras", "OpenCV", "LangChain", "Scikit-learn", "Pandas", "NumPy", "RAG", "LLMs"] },
-  { id: 3, title: "Full Stack Web", icon: <FaGlobe />, description: "Crafting scalable, interactive digital experiences.", skills: ["React.js", "Node.js", "Tailwind & Emotion CSS"] },
-  { id: 4, title: "Tools & Cloud", icon: <FaTools />, description: "The infrastructure that powers deployment.", skills: ["Git", "Vercel", "Firebase", "Postman"] },
-  { id: 5, title: "Core Concepts", icon: <FaDatabase />, description: "The theoretical backbone of computer science.", skills: ["Data Structures", "Algorithms", "OOP", "DBMS", "OS", "Computer Networks", "System Design"] }
+  { id: 1, title: "AI & ML Learning", icon: <FaBrain />, description: "The syntactic foundation of my engineering.", skills: ["Supervised & Unsupervised Learnning", "Deep Learning", "Neural Networks", "Transfer Learning","Natural Language Processing", "Computer Vision", "Langchain"] },
+  { id: 2, title: "Frameworks", icon: <FaWrench />, description: "Building the neural engines of tomorrow.", skills: ["TensorFlow", "PyTorch", "Keras", "OpenCV", "LangChain", "Scikit-learn", "RAG", "LLMs", "NLTK", "Hugging Face Transformers"] },
+  { id: 3, title: "Languages", icon: <FaCode />, description: "The syntactic foundation of my engineering.", skills: ["Python", "Java", "HTML5", "Node.js", "React.js", "Emotion & Tailwind CSS"] },
+  { id: 4, title: "Data Analytics", icon: <FaDatabase />, description: "Crafting scalable, interactive digital experiences.", skills: ["Pandas", "NumPy", "Matplotlib", "Seaborn", "EDA Techniques"] },
+  { id: 5, title: "Tools & Software", icon: <FaTools />, description: "The infrastructure that powers deployment.", skills: ["Git", "Github", "Postman", "VS Code", "IntelliJ", "Kaggle", "Figma", "Adobe Premier Pro", "Canva", "Atlas"] },
 ];
 
 const Skills = () => {
