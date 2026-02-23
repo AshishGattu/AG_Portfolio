@@ -124,8 +124,6 @@ const events = [
         { type: "image", orientation: "landscape", url: "/av5.JPG" },
         { type: "image", orientation: "landscape",  url: "/av6.JPG" },
         { type: "image", orientation: "landscape", url: "/av4.JPG" },
-        { type: "image", orientation: "portrait",  url: "/av9.jpg" },
-        { type: "image", orientation: "landscape", url: "/av10.jpg" }
     ]
   },
   { 

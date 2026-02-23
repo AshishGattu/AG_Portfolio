@@ -49,7 +49,7 @@ const Education = () => {
                 year="2022 - 2026"
                 title="Woxsen University"
                 degree="B.Tech - Computer Science (AI & ML)"
-                score="CGPA: 3.3 / 4.0"
+                score="CGPA: 3.4 / 4.0"
                 desc="Specializing in Artificial Intelligence. Core coursework in Deep Learning, NLP, and Data Structures."
             />
             <EducationCard 

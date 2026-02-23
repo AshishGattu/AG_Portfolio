@@ -7,7 +7,7 @@ const projects = [
     id: 1,
     title: "Emotion S2S",
     category: "Voice AI & Neural Translation",
-    image: "https://images.unsplash.com/photo-1589254065878-42c9da997008?q=80&w=1000&auto=format&fit=crop",
+    image: "/Gemini_Generated_Image_xhlozqxhlozqxhlo.png",
     tech: "Deep Learning, Audio Processing, Python",
     year: "2026",
     description: "An advanced Speech-to-Speech (S2S) translation architecture engineered to cross language barriers while strictly preserving the speaker's original vocal identity. Utilizing deep learning for voice cloning and emotional prosody retention, the model extracts acoustic features from the source audio and maps them to the translated output, ensuring the final synthesized voice retains the exact tone, pitch, and emotion of the original speaker."
@@ -16,7 +16,7 @@ const projects = [
     id: 2,
     title: "HROps",
     category: "Multi-Agent System",
-    image: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=1000&auto=format&fit=crop",
+    image: "/Gemini_Generated_Image_qlgey5qlgey5qlge.png",
     tech: "LangChain, Node.js, React.js",
     year: "2025",
     description: "A comprehensive multi-agent AI ecosystem designed to autonomously orchestrate human resource operations. Built on a modern React and Node.js stack powered by LangChain, the architecture deploys specialized LLM-driven agents to handle manual HR overhead. This includes automated resume parsing and semantic screening, dynamic candidate communication, and rigorous onboarding compliance verification, effectively reducing administrative bottlenecks."
@@ -25,7 +25,7 @@ const projects = [
     id: 3,
     title: "CyberGPT 2",
     category: "Compliance AI & RAG",
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000&auto=format&fit=crop",
+    image: "/Gemini_Generated_Image_4hwjum4hwjum4hwj.png",
     tech: "Phidata, Python, Qdrant, RAG",
     year: "2025",
     description: "An enterprise-grade governance and compliance verification engine utilizing a Multi-Agent architecture. The system ingests complex regulatory frameworks (RBI, ISO, TRM) and converts them into high-dimensional vector embeddings stored in Qdrant. By leveraging Retrieval-Augmented Generation (RAG) and semantic search, autonomous agents audit corporate controls against policy documents, surfacing compliance gaps through an interactive diagnostic chatbot."

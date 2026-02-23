@@ -50,7 +50,7 @@ const Contact = () => {
             </motion.h2>
 
             <p className="text-gray-400 text-xl mb-10 max-w-lg leading-relaxed">
-                Whether you have a project in mind, a question about my work, or just want to connect—I'm always open to discussing new opportunities.
+                Whether you have a project in mind, a question about my work, or just want to connect, I'm always open to discussing new opportunities.
             </p>
 
             {/* CONTACT DETAILS */}
