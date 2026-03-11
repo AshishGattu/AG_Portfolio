@@ -58,7 +58,7 @@ const ParallaxSection = () => {
             className="mt-12 text-center max-w-2xl will-change-transform"
         >
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                Engineer
+                ENGINEER
             </h2>
             <p className="text-gray-300 mb-8 text-lg leading-relaxed">
                 Designing the infrastructure for the next generation of software. 
