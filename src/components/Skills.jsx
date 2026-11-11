@@ -1,13 +1,15 @@
 import React, { useRef } from "react";
+import { useTrackDistance } from "../lib/useTrackDistance";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { FaCode, FaBrain, FaGlobe, FaTools, FaDatabase, FaWrench } from "react-icons/fa";
+import { FaCode, FaBrain, FaGlobe, FaTools, FaDatabase, FaWrench, FaCloud } from "react-icons/fa";
 
 const skillCategories = [
-  { id: 1, title: "AI & ML Learning", icon: <FaBrain />, description: "The syntactic foundation of my engineering.", skills: ["Supervised & Unsupervised Learnning", "Deep Learning", "Neural Networks", "Transfer Learning","Natural Language Processing", "Computer Vision", "Langchain"] },
-  { id: 2, title: "Frameworks", icon: <FaWrench />, description: "Building the neural engines of tomorrow.", skills: ["TensorFlow", "PyTorch", "Keras", "OpenCV", "LangChain", "Scikit-learn", "RAG", "LLMs", "NLTK", "Hugging Face Transformers"] },
-  { id: 3, title: "Languages", icon: <FaCode />, description: "The syntactic foundation of my engineering.", skills: ["Python", "Java", "HTML5", "Node.js", "React.js", "Emotion & Tailwind CSS"] },
-  { id: 4, title: "Data Analytics", icon: <FaDatabase />, description: "Crafting scalable, interactive digital experiences.", skills: ["Pandas", "NumPy", "Matplotlib", "Seaborn", "EDA Techniques"] },
-  { id: 5, title: "Tools & Software", icon: <FaTools />, description: "The infrastructure that powers deployment.", skills: ["Git", "Github", "Postman", "VS Code", "IntelliJ", "Kaggle", "Figma", "Adobe Premier Pro", "Canva", "Atlas"] },
+  { id: 1, title: "AI & ML", icon: <FaBrain />, description: "The core ideas behind the intelligent systems I build.", skills: ["Supervised & Unsupervised Learning", "Deep Learning", "Neural Networks", "Transfer Learning", "NLP", "Computer Vision", "Object Tracking", "LLMs", "LangChain", "RAG", "Agentic AI"] },
+  { id: 2, title: "Frameworks", icon: <FaWrench />, description: "Libraries I use to train, ship and serve models.", skills: ["PyTorch", "TensorFlow", "Keras", "YOLOv5", "Scikit-learn", "OpenCV", "NLTK", "SpaCy", "Hugging Face Transformers"] },
+  { id: 3, title: "Cloud", icon: <FaCloud />, description: "Managed cloud AI services for production workloads.", skills: ["Azure AI Document Intelligence", "Azure OpenAI (GPT-5 mini)"] },
+  { id: 4, title: "Languages", icon: <FaCode />, description: "The languages I write models and web apps in.", skills: ["Python", "JavaScript", "Node.js", "React", "HTML", "CSS", "Tailwind CSS"] },
+  { id: 5, title: "Data Analytics", icon: <FaDatabase />, description: "Exploring, cleaning and visualising data.", skills: ["Pandas", "NumPy", "Matplotlib", "Seaborn", "EDA Techniques"] },
+  { id: 6, title: "Tools & Software", icon: <FaTools />, description: "The everyday toolkit behind my workflow.", skills: ["Git", "Github", "Jupyter", "Google Colab", "Postman", "VS Code", "IntelliJ", "Kaggle", "Figma", "Adobe Premier Pro", "Canva", "Atlas"] },
 ];
 
 const Skills = () => {
@@ -19,7 +21,9 @@ const Skills = () => {
 
   // FIX: Increased height to 400vh for slower scroll
   // FIX: Changed x to -95% to ensure the last card is fully revealed
-  const x = useTransform(scrollYProgress, [0, 0.1, 1], ["1%", "1%", "-100%"]);
+  const trackRef = useRef(null);
+  const distance = useTrackDistance(trackRef, 5);
+  const x = useTransform(scrollYProgress, [0, 0.1, 1], [0, 0, -distance]);
   
   const opacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
   const textColor = useTransform(scrollYProgress, [0, 0.3], ["#ffffff", "#000000"]);
@@ -49,7 +53,7 @@ const Skills = () => {
         </motion.div>
 
         {/* Sliding Track */}
-        <motion.div style={{ x }} className="flex gap-8 pl-[5vw] items-center mt-48 md:mt-32">
+        <motion.div ref={trackRef} style={{ x }} className="flex gap-8 pl-[5vw] items-center mt-48 md:mt-32">
             <div className="w-[10vw] md:w-[5vw] flex-shrink-0" />
             {skillCategories.map((category) => (
                 <SkillCard key={category.id} category={category} />

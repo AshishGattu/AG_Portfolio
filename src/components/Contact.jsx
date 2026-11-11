@@ -1,11 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { FaGithub, FaLinkedin, FaEnvelope, FaPhone, FaArrowUp } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaEnvelope, FaPhone, FaArrowUp, FaDownload } from "react-icons/fa";
+import { scrollToSection, RESUME_URL } from "../lib/scrollTo";
 
 const Contact = () => {
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+    const scrollToTop = () => scrollToSection("hero");
 
   return (
     <section id="contact" className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-black via-black/80 to-transparent z-50 py-20 text-white overflow-hidden border-t border-white/10">
@@ -24,10 +23,12 @@ const Contact = () => {
         >
             <div className="w-72 h-72 md:w-96 md:h-96 rounded-full overflow-hidden border-4 border-white/10 relative z-10 shadow-2xl">
                 <img
-                    src="/IMG_7731.jpg"
+                    src="/media/contact.webp"
+                    loading="lazy"
+                    decoding="async"
                     alt="Ashish Gattu"
                     // Added 'object-top' to align the image to the top
-                    className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700"
+                    className="w-full h-full object-cover object-top md:grayscale md:group-hover:grayscale-0 transition-all duration-700"
                 />
             </div>
             <div className="absolute inset-0 -m-6 border border-dashed border-white/20 rounded-full animate-spin-slow pointer-events-none" />
@@ -55,20 +56,27 @@ const Contact = () => {
 
             {/* CONTACT DETAILS */}
             <div className="flex flex-col gap-6">
-                <a href="mailto:ashishg2204@gmail.com" className="flex items-center gap-6 text-3xl font-bold hover:text-[#ccff00] transition-colors group">
-                    <span className="p-4 bg-white/5 border border-white/10 rounded-full group-hover:bg-[#ccff00] group-hover:text-black transition-all group-hover:scale-110"><FaEnvelope /></span>
-                    ashishg2204@gmail.com
+                <a href="mailto:ashishg2204@gmail.com" className="flex items-center gap-4 md:gap-6 text-xl md:text-3xl font-bold hover:text-[#ccff00] transition-colors group">
+                    <span className="p-4 bg-white/5 border border-white/10 rounded-full group-hover:bg-[#ccff00] group-hover:text-black transition-all group-hover:scale-110 shrink-0"><FaEnvelope /></span>
+                    <span className="break-all">ashishg2204@gmail.com</span>
                 </a>
-                <a href="tel:+917032415999" className="flex items-center gap-6 text-3xl font-bold hover:text-[#ccff00] transition-colors group">
-                    <span className="p-4 bg-white/5 border border-white/10 rounded-full group-hover:bg-[#ccff00] group-hover:text-black transition-all group-hover:scale-110"><FaPhone /></span>
-                    +91 7032415999
+                <a href="tel:+917032415999" className="flex items-center gap-4 md:gap-6 text-xl md:text-3xl font-bold hover:text-[#ccff00] transition-colors group">
+                    <span className="p-4 bg-white/5 border border-white/10 rounded-full group-hover:bg-[#ccff00] group-hover:text-black transition-all group-hover:scale-110 shrink-0"><FaPhone /></span>
+                    +91 70324 15999
+                </a>
+                <a
+                    href={RESUME_URL}
+                    download
+                    className="inline-flex items-center gap-3 self-center md:self-start border border-[#ccff00] text-[#ccff00] px-6 py-3 rounded-full font-mono text-sm uppercase tracking-widest hover:bg-[#ccff00] hover:text-black transition-colors"
+                >
+                    <FaDownload /> Download Resume
                 </a>
             </div>
 
             {/* SOCIAL LINKS */}
             <div className="flex gap-8 mt-20 justify-center md:justify-start">
-                <SocialLink href="https://github.com/AshishGattu" icon={<FaGithub />} />
-                <SocialLink href="https://linkedin.com/in/ashishgattu" icon={<FaLinkedin />} />
+                <SocialLink href="https://github.com/AshishGattu" icon={<FaGithub />} label="GitHub profile" />
+                <SocialLink href="https://linkedin.com/in/ashish-gattu" icon={<FaLinkedin />} label="LinkedIn profile" />
             </div>
 
             <p className="mt-16 text-gray-600 text-sm font-mono">
@@ -81,10 +89,11 @@ const Contact = () => {
       {/* GO TO TOP BUTTON */}
       <motion.button
         onClick={scrollToTop}
+        aria-label="Scroll to top"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         whileHover={{ scale: 1.1, backgroundColor: "#ccff00", color: "#000" }}
-        className="absolute bottom-10 right-10 p-4 bg-white/10 border border-white/20 rounded-full text-white transition-all z-50 cursor-pointer"
+        className="absolute bottom-6 right-4 md:bottom-10 md:right-10 p-4 bg-white/10 border border-white/20 rounded-full text-white transition-all z-50 cursor-pointer"
       >
         <FaArrowUp size={20} />
       </motion.button>
@@ -93,8 +102,9 @@ const Contact = () => {
   );
 };
 
-const SocialLink = ({ href, icon }) => (
+const SocialLink = ({ href, icon, label }) => (
     <a
+        aria-label={label}
         href={href}
         target="_blank"
         rel="noopener noreferrer"

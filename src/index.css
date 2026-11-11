@@ -13,3 +13,17 @@ body {
   color: #ffffff;
   overflow-x: hidden;
 }
+/* Reduced motion: stop decorative loops and long transitions */
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin-slow,
+  .animate-ping,
+  .animate-pulse {
+    animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

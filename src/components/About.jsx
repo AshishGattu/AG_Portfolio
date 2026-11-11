@@ -22,8 +22,7 @@ const About = () => {
           {/* Your Specific Content */}
           <div className="relative border-l-2 border-[#ccff00] pl-6 py-2">
             <p className="text-gray-300 text-lg md:text-xl leading-relaxed font-light">
-              Entry-level <span className="text-white font-bold">AI & ML Engineer</span> with a strong foundation in Deep Learning, Computer Vision and Agentic AI. 
-              Gained hands-on experience in full-stack web development and demonstrated technical proficiency in engineering <span className="text-[#ccff00]">multi-agent architectures and computer vision solutions</span> through comprehensive personal and academic projects. Eager to leverage these skills to contribute to innovative software solutions in a fast-paced development environment.
+              <span className="text-white font-bold">AI & ML Engineer</span> with a strong foundation in Deep Learning, Computer Vision and Agentic AI, building production systems: an LLM-powered insurance document-extraction platform on Azure and real-time video analytics for US retail stores. Hands-on with full-stack web development, RAG chatbots and multi-agent architectures; national 3rd-place hackathon finish and a published patent. Focused on building reliable, <span className="text-[#ccff00]">production-grade AI systems</span> that solve real business problems.
             </p>
           </div>
 
@@ -31,7 +30,7 @@ const About = () => {
           <div className="grid grid-cols-2 gap-4 mt-12">
             <StatCard icon={<FaAward />} title="Publications" value="1" />
             <StatCard icon={<FaCode />} title="Hackathons" value="3" />
-            <StatCard icon={<FaBrain />} title="Experience" value="1" />
+            <StatCard icon={<FaBrain />} title="Experience" value="2" />
             <StatCard icon={<FaGraduationCap />} title="CGPA" value="3.4/4.0" />
           </div>
         </motion.div>
@@ -56,24 +55,24 @@ const About = () => {
             </div>
 
             <h4 className="text-3xl font-bold text-white mb-2">
-              AI Intern
+              AI Engineer
             </h4>
             <h5 className="text-xl text-[#ccff00] mb-6 font-mono">
-              @ Srinishtha Technologies
+              @ Maaze Underwriting Solutions
             </h5>
 
             <ul className="space-y-4 text-gray-300 text-sm leading-relaxed">
                 <li className="flex gap-3">
                     <span className="text-[#ccff00] mt-1">▹</span>
-                    <span>Engineered <strong>RAG-based chatbots</strong> reducing query resolution time by 40%.</span>
+                    <span>Built an Azure-based platform using <strong>Azure AI Document Intelligence</strong> and GPT-5 mini to extract insurance documents into structured JSON.</span>
                 </li>
                 <li className="flex gap-3">
                     <span className="text-[#ccff00] mt-1">▹</span>
-                    <span>Automated internal workflows using Python scripts and LLM integrations.</span>
+                    <span>Added an <strong>LLM assistant</strong> that answers user questions about ingested documents.</span>
                 </li>
                 <li className="flex gap-3">
                     <span className="text-[#ccff00] mt-1">▹</span>
-                    <span>Collaborated with senior devs on full-stack React implementation.</span>
+                    <span>Delivered <strong>real-time YOLOv5 video analytics</strong> for US retail stores: heatmaps, dwell time and footfall.</span>
                 </li>
             </ul>
 

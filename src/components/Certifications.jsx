@@ -1,5 +1,7 @@
-import React, { useState, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import React, { useState, useCallback } from "react";
+import { createPortal } from "react-dom";
+import useModalLock from "../lib/useModalLock";
+import { motion, AnimatePresence } from "framer-motion";
 import { FaAward, FaFingerprint, FaExternalLinkAlt, FaTimes } from "react-icons/fa";
 
 // --- DATA CONFIGURATION ---
@@ -10,53 +12,53 @@ const certifications = [
     title: "Introduction to Web Development", 
     issuer: "University of California, Davis", 
     date: "April 2, 2025", 
-    image: "/course1.jpeg" 
+    image: "/media/cert-ucdavis-web.webp" 
   },
   { 
     id: 2, 
     title: "Intro to TensorFlow for AI, ML, and DL", 
     issuer: "DeepLearning.AI", 
     date: "March 24, 2024", 
-    image: "/course2.jpeg" 
+    image: "/media/cert-deeplearning-tensorflow.webp" 
   },
   { 
     id: 3, 
     title: "An Intuitive Introduction to Probability", 
     issuer: "University of Zurich", 
     date: "April 24, 2023", 
-    image: "/course3.jpeg" 
+    image: "/media/cert-zurich-probability.webp" 
   },
   { 
     id: 4, 
     title: "Object Oriented Programming in Java", 
     issuer: "University of California San Diego", 
     date: "April 19, 2023", 
-    image: "/course4.jpeg" 
+    image: "/media/cert-ucsd-java.webp" 
   },
   { 
     id: 5, 
     title: "Oriental Group Hackathon Certificate", 
     issuer: "Oriental Group of Institutes (Bhopal)", 
     date: "2024", 
-    image: "/IMG_0299.jpg" 
+    image: "/media/cert-oriental-hackathon.webp" 
   },
   { 
     id: 6, 
     title: "GDSC WOW Hackathon Certificate", 
     issuer: "Google Developer Student Clubs (Kerala)", 
     date: "2023", 
-    image: "/IMG_0298.jpg" 
+    image: "/media/cert-gdsc-hackathon.webp" 
   }
 ];
 
 const publications = [
   { 
     id: 1, 
-    title: "Smart Stream: IoT-Based Real-Time Water Consumption Monitoring and Management System", 
-    appNumber: "202641011870 A", 
+    title: "Smart Stream – Water Flow Detection System", 
+    appNumber: "202641011870-A", 
     date: "Feb 13, 2026",
-    role: "Inventor (3rd Author)",
-    description: "An IoT-based system for real-time monitoring and management of water consumption at an appliance level. The system utilizes flow, pressure, and temperature sensors to transmit data to a cloud server, where AI analyzes consumption patterns to suggest optimized usage goals. Capable of operating in both online and offline modes via Wi-Fi or Bluetooth mesh." 
+    role: "Inventor (3rd Author) · Indian Patent Office",
+    description: "IoT system using water-flow, pressure and temperature sensors on faucets and showerheads, with an Arduino and ESP32 Wi-Fi module streaming real-time consumption data to cloud storage and a web app for per-device usage analytics, supporting sustainable water management." 
   }
 ];
 
@@ -82,25 +84,21 @@ const itemVariants = {
 const Certifications = () => {
   const [activeTab, setActiveTab] = useState("certs"); 
   const [selectedCert, setSelectedCert] = useState(null); 
-  const headerRef = useRef(null);
 
-  // HEADER ANIMATION
-  const { scrollYProgress: headerProgress } = useScroll({
-    target: headerRef,
-    offset: ["start end", "end start"] 
-  });
-  
-  const headerScale = useTransform(headerProgress, [0.1, 0.5, 0.8], [1.75, 1, 1.75]);
-  const headerOpacity = useTransform(headerProgress, [0.1, 0.4, 0.6, 0.9], [0, 1, 1, 0]);
-  const headerBlur = useTransform(headerProgress, [0.1, 0.5, 0.8], ["10px", "0px", "10px"]);
-  const headerY = useTransform(headerProgress, [0.5, 1], [0, -50]);
+  const closeCert = useCallback(() => setSelectedCert(null), []);
+  useModalLock(!!selectedCert, closeCert);
 
   return (
     <section className="min-h-screen py-24 relative z-20 flex flex-col items-center bg-transparent">
       
       {/* HEADER */}
-      <div ref={headerRef} className="text-center mb-16 z-20 px-4 perspective-1000 relative">
-        <motion.div style={{ scale: headerScale, opacity: headerOpacity, filter: headerBlur, y: headerY }}>
+      <div className="text-center mb-16 z-20 px-4 relative">
+        <motion.div
+            initial={{ clipPath: "inset(0 100% 0 0)" }}
+            whileInView={{ clipPath: "inset(0 0% 0 0)" }}
+            viewport={{ once: true, margin: "-10% 0px" }}
+            transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
+        >
             <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-8">
                 CREDENTIALS <span className="text-[#ccff00]">ARCHIVE</span>
             </h2>
@@ -224,13 +222,14 @@ const Certifications = () => {
       </div>
 
       {/* CERTIFICATE MODAL (TRANSPARENT BACKGROUND) */}
+      {createPortal(
       <AnimatePresence>
         {selectedCert && (
-            <motion.div 
+            <motion.div key="modal" 
                 initial={{ opacity: 0 }} 
                 animate={{ opacity: 1 }} 
                 exit={{ opacity: 0 }} 
-                className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md p-4" 
+                className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" 
                 onClick={() => setSelectedCert(null)}
             >
                 <motion.div 
@@ -248,6 +247,7 @@ const Certifications = () => {
                         </div>
                         <button 
                             onClick={() => setSelectedCert(null)} 
+                            aria-label="Close certificate"
                             className="p-2 text-white/70 hover:text-[#ccff00] transition-all hover:scale-110"
                         >
                             <FaTimes size={30} />
@@ -257,13 +257,16 @@ const Certifications = () => {
                     {/* Image (Floating freely without a card) */}
                     <img 
                         src={selectedCert.image} 
-                        alt={selectedCert.title} 
+                        alt={`${selectedCert.title} certificate`}
+                        decoding="async"
                         className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl" 
                     />
                 </motion.div>
             </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body
+      )}
     </section>
   );
 };

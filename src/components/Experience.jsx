@@ -1,18 +1,128 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { FaBriefcase, FaCalendarAlt, FaMapMarkerAlt, FaLaptopCode } from "react-icons/fa";
 
 const experiences = [
   {
     id: 1,
+    role: "AI Engineer",
+    company: "Maaze Underwriting Solutions",
+    date: "Jul 2026 - Present",
+    description: "Building production AI systems across document intelligence and computer vision.",
+    highlights: [
+      "Insurance Document Extraction Platform: a web platform on Azure AI Document Intelligence and GPT-5 mini that ingests varied-layout insurance documents via HTTP and email, maps the extracted text to structured JSON aligned with form-specific schemas per insurance form type, and includes an LLM assistant that answers user questions about the ingested documents.",
+      "Real-Time Retail Video Analytics (US Store Franchise): real-time person detection and tracking with YOLOv5 on in-store camera footage, generating crowd-density heatmaps and delivering store analytics including dwell time, fulfilment time and total footfall in/out."
+    ],
+    tech: ["Azure AI Document Intelligence", "Azure OpenAI (GPT-5 mini)", "YOLOv5", "Object Tracking", "Python"]
+  },
+  {
+    id: 2,
     role: "AI Intern",
     company: "Srinishtha Technologies",
-    date: "Sept 2025 - Present",
+    date: "Dec 2024 - Sep 2025",
     location: "Hyderabad, India",
-    description: "Spearheaded the development of RAG-based chatbots and automation pipelines. Bridged the gap between complex LLM architectures and user-friendly interfaces, optimizing retrieval accuracy by 40%.",
-    tech: ["RAG Pipelines", "LLMs", "Python", "Automation"]
+    description: "Developed the UI and backend for a scalable EdTech platform supporting 80+ branches across Telangana, and built RAG-based conversational AI chatbots for E-Commerce that automate customer interactions end-to-end. Also built automation tools for client projects that replaced manual, repetitive steps in day-to-day operations.",
+    tech: ["RAG", "LLMs", "React", "Node.js", "Automation"]
   }
 ];
+
+const CELL = 16;
+
+// Cursor-driven "crowd-density heatmap": gaussian splats into a low-res grid, decayed per frame.
+function HeatCanvas({ sectionRef }) {
+  const canvasRef = useRef(null);
+  const [enabled] = React.useState(() =>
+    typeof window !== "undefined" &&
+    !window.matchMedia("(hover: none)").matches &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+
+  useEffect(() => {
+    if (!enabled) return;
+    const section = sectionRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const off = document.createElement("canvas");
+    const octx = off.getContext("2d");
+    let cols = 0, rows = 0, heat, img, raf = 0, visible = false;
+
+    const resize = () => {
+      const r = section.getBoundingClientRect();
+      cols = Math.max(1, Math.ceil(r.width / CELL));
+      rows = Math.max(1, Math.ceil(r.height / CELL));
+      canvas.width = r.width; canvas.height = r.height;
+      off.width = cols; off.height = rows;
+      heat = new Float32Array(cols * rows);
+      img = octx.createImageData(cols, rows);
+    };
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(section);
+
+    const splat = (cx, cy) => {
+      const R = 4;
+      for (let y = Math.max(0, cy - R); y <= Math.min(rows - 1, cy + R); y++) {
+        for (let x = Math.max(0, cx - R); x <= Math.min(cols - 1, cx + R); x++) {
+          const d2 = (x - cx) ** 2 + (y - cy) ** 2;
+          heat[y * cols + x] = Math.min(1.5, heat[y * cols + x] + 0.12 * Math.exp(-d2 / 6));
+        }
+      }
+    };
+
+    const frame = () => {
+      raf = 0;
+      let any = false;
+      const d = img.data;
+      for (let i = 0; i < heat.length; i++) {
+        let h = heat[i] * 0.965;
+        if (h < 0.01) h = 0;
+        heat[i] = h;
+        const o = i * 4;
+        if (h === 0) { d[o + 3] = 0; continue; }
+        any = true;
+        const t = Math.min(1, h);
+        // transparent -> lime -> white at peak
+        const w = Math.max(0, (t - 0.7) / 0.3);
+        d[o] = 204 + 51 * w; d[o + 1] = 255; d[o + 2] = 255 * w;
+        d[o + 3] = Math.min(255, t * 340);
+      }
+      octx.putImageData(img, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.imageSmoothingEnabled = true;
+      ctx.globalAlpha = 0.35;
+      ctx.drawImage(off, 0, 0, canvas.width, canvas.height);
+      if (any && visible) raf = requestAnimationFrame(frame);
+    };
+    const kick = () => { if (!raf && visible) raf = requestAnimationFrame(frame); };
+
+    const onMove = (e) => {
+      const r = section.getBoundingClientRect();
+      splat(Math.floor((e.clientX - r.left) / CELL), Math.floor((e.clientY - r.top) / CELL));
+      kick();
+    };
+    const io = new IntersectionObserver(([en]) => {
+      visible = en.isIntersecting;
+      if (visible) kick(); else if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    });
+    io.observe(section);
+    section.addEventListener("pointermove", onMove);
+    return () => {
+      section.removeEventListener("pointermove", onMove);
+      io.disconnect(); ro.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [enabled, sectionRef]);
+
+  if (!enabled) return null;
+  return (
+    <>
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-0" aria-hidden="true" />
+      <div className="absolute bottom-3 right-4 z-0 font-mono text-[10px] text-white/30 pointer-events-none select-none hidden md:block">
+        {"// footfall heatmap — move your cursor"}
+      </div>
+    </>
+  );
+}
 
 const Experience = () => {
   const containerRef = useRef(null);
@@ -44,9 +154,6 @@ const Experience = () => {
   // Opacity: Invisible (0) -> Visible (1) -> Invisible (0)
   const headerOpacity = useTransform(headerProgress, [0.1, 0.4, 0.6, 0.9], [0, 1, 1, 0]);
   
-  // Blur: Blurry (10px) -> Sharp (0px) -> Blurry (10px)
-  const headerBlur = useTransform(headerProgress, [0.1, 0.5, 0.8], ["10px", "0px", "10px"]);
-
   // Y: Move up slightly on exit to enhance the "fly through" feel
   const headerY = useTransform(headerProgress, [0.5, 1], [0, -100]);
 
@@ -56,6 +163,8 @@ const Experience = () => {
       className="relative min-h-[120vh] pt-10 pb-32 flex flex-col items-center justify-center overflow-hidden"
     >
       
+      <HeatCanvas sectionRef={containerRef} />
+
       {/* --- SIDE PILLARS --- */}
       <motion.div style={{ y: bgY, opacity: 0.1 }} className="absolute left-4 md:left-20 top-1/2 -translate-y-1/2 hidden md:flex items-center justify-center pointer-events-none select-none z-0 w-32">
         <h1 className="text-[15vh] font-black text-transparent leading-none -rotate-90 whitespace-nowrap tracking-widest" style={{ WebkitTextStroke: "2px white" }}>WORK</h1>
@@ -70,7 +179,7 @@ const Experience = () => {
         
         {/* Animated Header */}
         <div ref={headerRef} className="mb-12 text-center z-0">
-            <motion.div style={{ scale: headerScale, opacity: headerOpacity, filter: headerBlur, y: headerY }}>
+            <motion.div style={{ scale: headerScale, opacity: headerOpacity, y: headerY }}>
                 <h2 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight">
                     PROFESSIONAL <span className="text-[#ccff00]">JOURNEY</span>
                 </h2>
@@ -113,11 +222,24 @@ const ExperienceCard = ({ exp, index }) => {
                     </div>
                     <div className="mt-4 md:mt-0 text-left md:text-right">
                         <div className="text-[#ccff00] font-mono text-sm flex items-center gap-2 md:justify-end bg-[#ccff00]/10 px-3 py-1 rounded-full w-fit md:w-auto"><FaCalendarAlt /> {exp.date}</div>
-                        <div className="text-gray-500 text-sm flex items-center gap-2 md:justify-end mt-2"><FaMapMarkerAlt /> {exp.location}</div>
+                        {exp.location && (
+                            <div className="text-gray-500 text-sm flex items-center gap-2 md:justify-end mt-2"><FaMapMarkerAlt /> {exp.location}</div>
+                        )}
                     </div>
                 </div>
 
-                <p className="text-gray-300 leading-relaxed mb-8 text-lg">{exp.description}</p>
+                <p className={`text-gray-300 leading-relaxed text-lg ${exp.highlights ? "mb-4" : "mb-8"}`}>{exp.description}</p>
+
+                {exp.highlights && (
+                    <ul className="space-y-4 text-gray-300 text-base leading-relaxed mb-8">
+                        {exp.highlights.map((h, i) => (
+                            <li key={i} className="flex gap-3">
+                                <span className="text-[#ccff00] mt-1">▹</span>
+                                <span>{h}</span>
+                            </li>
+                        ))}
+                    </ul>
+                )}
 
                 <div className="flex flex-wrap gap-3">
                     {exp.tech.map((tag, i) => (

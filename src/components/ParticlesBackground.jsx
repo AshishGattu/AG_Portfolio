@@ -1,46 +1,62 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 
 const ParticlesBackground = () => {
   const canvasRef = useRef(null);
-  const [backgroundColor, setBackgroundColor] = useState("rgba(5,5,5,1)");
+  const wrapperRef = useRef(null);
   
   useEffect(() => {
     const canvas = canvasRef.current;
-    
-    const particleCount = 100; 
+    const wrapper = wrapperRef.current;
+    const ctx = canvas.getContext("2d");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const particleCount = window.innerWidth < 768 ? 45 : 100;
     const connectionDistance = 150;
     const mouseDistance = 200;
+    const connectionDistanceSq = connectionDistance * connectionDistance;
+    const mouseDistanceSq = mouseDistance * mouseDistance;
 
     let width, height;
     let particles = [];
     let mouse = { x: null, y: null };
 
+    let rafId;
+    let anchors = { P: null, S: null, A: null };
+
+    // Cached live section positions (document coordinates); refreshed on resize / layout change.
+    const readTop = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.getBoundingClientRect().top + window.scrollY : null;
+    };
+    const refreshAnchors = () => {
+        anchors = { P: readTop("projects"), S: readTop("skills"), A: readTop("activities") };
+    };
+
     const updateColors = () => {
         const scroll = window.scrollY;
         const h = window.innerHeight;
+        const { P, S, A } = anchors;
 
         // 1. PROJECTS (Dark -> Light)
-        const pInStart = h * 2.3;
-        const pInEnd = h * 3.5;
+        const pInStart = P != null ? P - h : h * 2.3;
+        const pInEnd = P != null ? P + 0.2 * h : h * 3.5;
 
         // 2. PROJECTS EXIT (Light -> Dark)
-        const pOutStart = h * 6.0; 
-        const pOutEnd = h * 8.2;
+        const pOutStart = P != null ? P + 2.7 * h : h * 6.0;
+        const pOutEnd = P != null ? P + 4.9 * h : h * 8.2;
 
         // 3. SKILLS & EDUCATION (Dark -> Light)
         // Skills starts at ~10h (after expanded skills height).
         // Education starts at ~14h.
         // We fade to light at 9.2h and KEEP it light.
-        const sInStart = h * 9.2; 
-        const sInEnd = h * 10.2;
+        const sInStart = S != null ? S - 0.8 * h : h * 9.2;
+        const sInEnd = S != null ? S + 0.2 * h : h * 10.2;
 
         // 4. ACTIVITIES ENTRY (Light -> Dark)
         // Education ends around 16.0h (due to height).
         // Activities starts. We fade to BLACK.
-        const aOutStart = h * 14.5;
-        const aOutEnd = h * 15.5;
-
-        const cInStart = h * 18.0;
+        const aOutStart = A != null ? A - h : h * 14.5;
+        const aOutEnd = A != null ? A : h * 15.5;
 
         let isLight = 0; 
 
@@ -56,25 +72,23 @@ const ParticlesBackground = () => {
 
         isLight = Math.min(Math.max(isLight, 0), 1);
 
-        const pR = 204 - (84 * isLight);  
-        const pG = 255 - (205 * isLight); 
-        const pB = 0 + (255 * isLight);   
-        
+        // Particles: lime (#ccff00) -> near-black (#111). Lines: blue-grey -> black.
+        const pR = 204 + (17 - 204) * isLight;
+        const pG = 255 + (17 - 255) * isLight;
+        const pB = 0 + (17 - 0) * isLight;
+
         const lR = 150 * (1 - isLight);
         const lG = 150 * (1 - isLight);
         const lB = 255 * (1 - isLight);
 
-        const bgR = 5 + (222 * isLight);
-        const bgG = 5 + (222 * isLight);
-        const bgB = 5 + (222 * isLight);
-        
-        setBackgroundColor(`rgb(${Math.round(bgR)}, ${Math.round(bgG)}, ${Math.round(bgB)})`);
+        const bgV = 5 + (222 * isLight);
+        wrapper.style.backgroundColor = `rgb(${Math.round(bgV)}, ${Math.round(bgV)}, ${Math.round(bgV)})`;
 
         const alpha = isLight > 0.5 ? 1.0 : 0.9;
 
         return {
-            particle: `rgba(${pR}, ${pG}, ${pB}, ${alpha})`,
-            line: (distAlpha) => `rgba(${lR}, ${lG}, ${lB}, ${distAlpha * alpha})`
+            particle: `rgba(${Math.round(pR)}, ${Math.round(pG)}, ${Math.round(pB)}, ${alpha})`,
+            line: (distAlpha) => `rgba(${Math.round(lR)}, ${Math.round(lG)}, ${Math.round(lB)}, ${distAlpha * alpha})`
         };
     };
 
@@ -102,9 +116,10 @@ const ParticlesBackground = () => {
         if (mouse.x != null) {
           let dx = mouse.x - this.x;
           let dy = mouse.y - this.y;
-          let distance = Math.sqrt(dx * dx + dy * dy);
+          const distSq = dx * dx + dy * dy;
 
-          if (distance < mouseDistance) {
+          if (distSq < mouseDistanceSq && distSq > 0) {
+            const distance = Math.sqrt(distSq);
             const forceDirectionX = dx / distance;
             const forceDirectionY = dy / distance;
             const force = (mouseDistance - distance) / mouseDistance;
@@ -118,7 +133,6 @@ const ParticlesBackground = () => {
       }
 
       draw(colors) {
-        const ctx = canvas.getContext("2d");
         ctx.fillStyle = colors.particle;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -134,18 +148,18 @@ const ParticlesBackground = () => {
       }
     };
 
-    const animate = () => {
-      const ctx = canvas.getContext("2d");
+    const frame = (move) => {
       ctx.clearRect(0, 0, width, height);
       const colors = updateColors();
       
       for (let a = 0; a < particles.length; a++) {
-        for (let b = a; b < particles.length; b++) {
+        for (let b = a + 1; b < particles.length; b++) {
           let dx = particles[a].x - particles[b].x;
           let dy = particles[a].y - particles[b].y;
-          let distance = Math.sqrt(dx * dx + dy * dy);
+          const distSq = dx * dx + dy * dy;
 
-          if (distance < connectionDistance) {
+          if (distSq < connectionDistanceSq) {
+            const distance = Math.sqrt(distSq);
             ctx.strokeStyle = colors.line(1 - distance / connectionDistance);
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -157,33 +171,77 @@ const ParticlesBackground = () => {
       }
 
       particles.forEach((particle) => {
-        particle.update();
+        if (move) particle.update();
         particle.draw(colors);
       });
-      requestAnimationFrame(animate);
     };
 
-    window.addEventListener("resize", resize);
-    window.addEventListener("mousemove", (e) => {
+    const animate = () => {
+      frame(true);
+      rafId = requestAnimationFrame(animate);
+    };
+
+    const handleVisibility = () => {
+      if (reducedMotion) return;
+      cancelAnimationFrame(rafId);
+      if (!document.hidden) rafId = requestAnimationFrame(animate);
+    };
+
+    // Reduced motion: single static frame, redrawn only when scroll/resize changes colours.
+    let staticQueued = false;
+    const queueStatic = () => {
+      if (staticQueued) return;
+      staticQueued = true;
+      requestAnimationFrame(() => { staticQueued = false; frame(false); });
+    };
+
+    const handleMouseMove = (e) => {
       mouse.x = e.x;
       mouse.y = e.y;
-    });
-    window.addEventListener("mouseout", () => {
+    };
+    const handleMouseOut = () => {
       mouse.x = null;
       mouse.y = null;
-    });
+    };
+    const handleResize = () => {
+      resize();
+      refreshAnchors();
+      if (reducedMotion) queueStatic();
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("load", refreshAnchors);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseout", handleMouseOut);
+    const resizeObserver = new ResizeObserver(refreshAnchors);
+    resizeObserver.observe(document.body);
 
     init();
-    animate();
+    refreshAnchors();
+    if (reducedMotion) {
+      frame(false);
+      window.addEventListener("scroll", queueStatic, { passive: true });
+    } else {
+      animate();
+      document.addEventListener("visibilitychange", handleVisibility);
+    }
 
     return () => {
-      window.removeEventListener("resize", resize);
+      cancelAnimationFrame(rafId);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("scroll", queueStatic);
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("load", refreshAnchors);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseout", handleMouseOut);
     };
   }, []);
 
   return (
     <div 
-        style={{ backgroundColor: backgroundColor, transition: 'background-color 0.1s linear' }}
+        ref={wrapperRef}
+        style={{ backgroundColor: "rgb(5, 5, 5)" }}
         className="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"
     >
         <canvas ref={canvasRef} className="w-full h-full" />

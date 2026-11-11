@@ -43,8 +43,9 @@ const ParallaxSection = () => {
             <div className="absolute inset-0 bg-[#ccff00] blur-[60px] opacity-10 group-hover:opacity-20 transition-opacity duration-500"></div>
             
             <img 
-                src="/profile.jpg" 
-                alt="Ashish Working" 
+                src="/media/profile.webp"
+                alt="Ashish Gattu working at his desk"
+                decoding="async"
                 className="w-full h-full object-cover object-[center_30%]"
             />
             

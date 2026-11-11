@@ -71,6 +71,14 @@ const Hero = () => {
         >
           ASHISH <span className="text-[#ccff00] drop-shadow-[0_0_35px_rgba(204,255,0,0.4)]">GATTU</span>
         </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.8, ease: "easeOut" }}
+          className="mt-6 font-mono text-sm md:text-xl tracking-[0.3em] text-[#ccff00]"
+        >
+          AI &amp; ML ENGINEER
+        </motion.p>
       </motion.div>
 
       {/* --- SCROLL DOWN INDICATOR --- */}

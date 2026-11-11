@@ -1,42 +1,27 @@
-import React, { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 import { FaGraduationCap, FaSchool, FaUniversity, FaLanguage } from "react-icons/fa";
 
 const Education = () => {
-  const containerRef = useRef(null);
-  const headerRef = useRef(null);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  });
-
-  // Header Animation
-  const { scrollYProgress: headerProgress } = useScroll({
-    target: headerRef,
-    offset: ["start end", "end start"]
-  });
-  
-  const headerScale = useTransform(headerProgress, [0.1, 0.5, 0.8], [2.0, 1, 2.0]);
-  const headerOpacity = useTransform(headerProgress, [0.1, 0.4, 0.6, 0.9], [0, 1, 1, 0]);
-  const headerBlur = useTransform(headerProgress, [0.1, 0.5, 0.8], ["10px", "0px", "10px"]);
-  const headerY = useTransform(headerProgress, [0.5, 1], [0, -100]);
-
   return (
     <section 
-        ref={containerRef} 
         // FIX: Background is now transparent
         className="relative min-h-[150vh] py-32 z-20 flex flex-col items-center bg-transparent text-black overflow-hidden"
     >
       
       {/* HEADER */}
-      <div ref={headerRef} className="text-center mb-12 z-20 px-4 perspective-1000 relative">
-        <motion.div style={{ scale: headerScale, opacity: headerOpacity, filter: headerBlur, y: headerY }}>
-            <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 text-black">
-                ACADEMIC <span className="text-transparent" style={{ WebkitTextStroke: "1px black" }}>BACKBONE</span>
-            </h2>
-            <div className="h-1.5 w-32 bg-black mx-auto" />
-        </motion.div>
+      <div className="text-center mb-12 z-20 px-4 relative">
+        <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 text-black">
+            <RiseWord delay={0}>ACADEMIC</RiseWord>{" "}
+            <RiseWord delay={0.15} className="text-transparent" style={{ WebkitTextStroke: "2px black" }}>BACKBONE</RiseWord>
+        </h2>
+        <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4, duration: 0.6, ease: "easeOut" }}
+            className="h-1.5 w-32 bg-black mx-auto origin-center"
+        />
       </div>
 
       {/* CONTENT GRID */}
@@ -48,7 +33,7 @@ const Education = () => {
                 icon={<FaUniversity />}
                 year="2022 - 2026"
                 title="Woxsen University"
-                degree="B.Tech - Computer Science (AI & ML)"
+                degree="B.Tech - AI & Machine Learning"
                 score="CGPA: 3.4 / 4.0"
                 desc="Specializing in Artificial Intelligence. Core coursework in Deep Learning, NLP, and Data Structures."
             />
@@ -72,7 +57,7 @@ const Education = () => {
 
         {/* RIGHT COLUMN: LANGUAGES */}
         <div className="sticky top-32 h-fit">
-             <div className="bg-white/50 border-2 border-black p-10 rounded-2xl backdrop-blur-sm">
+             <div className="bg-[#f4f4f2]/95 border-2 border-black p-10 rounded-2xl ">
                 <div className="flex items-center gap-4 mb-8 border-b-2 border-black pb-6">
                     <div className="p-4 bg-black text-white text-3xl rounded-lg"><FaLanguage /></div>
                     <div>
@@ -81,9 +66,10 @@ const Education = () => {
                     </div>
                 </div>
                 <div className="space-y-6">
-                    <LanguageItem lang="English" level="Professional Proficiency" progress="100%" />
-                    <LanguageItem lang="Hindi" level="Fluent / Native" progress="95%" />
-                    <LanguageItem lang="Telugu" level="Native / Mother Tongue" progress="100%" />
+                    <LanguageItem lang="English" level="Fluent / Professional" progress="100%" />
+                    <LanguageItem lang="Hindi" level="Fluent" progress="95%" />
+                    <LanguageItem lang="Telugu" level="Fluent / Native" progress="100%" />
+                    <LanguageItem lang="German" level="Beginner" progress="25%" />
                 </div>
             </div>
         </div>
@@ -93,8 +79,24 @@ const Education = () => {
   );
 };
 
+// Word that rises out of a clipped line on enter (staggered via `delay`)
+const RiseWord = ({ children, delay = 0, className = "", style }) => (
+    <span className="inline-block overflow-hidden align-bottom pb-1">
+        <motion.span
+            initial={{ y: "110%" }}
+            whileInView={{ y: 0 }}
+            viewport={{ once: true, margin: "-10% 0px" }}
+            transition={{ delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className={`inline-block ${className}`}
+            style={style}
+        >
+            {children}
+        </motion.span>
+    </span>
+);
+
 const EducationCard = ({ icon, year, title, degree, score, desc }) => (
-    <div className="bg-white/50 border-2 border-black p-8 rounded-2xl backdrop-blur-sm hover:translate-x-1 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
+    <div className="bg-[#f4f4f2]/95 border-2 border-black p-8 rounded-2xl  hover:translate-x-1 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
         <div className="flex justify-between items-start mb-4">
             <div className="p-3 bg-black text-white text-2xl rounded-lg">{icon}</div>
             <span className="bg-black text-white px-3 py-1 text-xs font-mono rounded-full">{year}</span>
