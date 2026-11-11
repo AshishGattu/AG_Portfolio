@@ -239,7 +239,7 @@ export const patent = {
 export const caseStudy = {
   title: "Document → JSON",
   basedOn: "maaze-docs",
-  stages: ["ingest the document via HTTP or email", "Azure AI Document Intelligence extracts the text and fields", "GPT-5 mini maps them to a form-specific JSON schema", "an ask-the-document assistant answers questions about it"],
+  stages: ["a document arrives via HTTP or email", "Azure AI Document Intelligence extracts its text and fields", "GPT-5 mini maps them to a form-specific JSON schema", "an ask-the-document assistant answers questions about it"],
   sample: "a commercial property application",
   note: "Illustrative data. Real client documents are confidential.",
 };

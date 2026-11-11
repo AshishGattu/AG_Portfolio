@@ -347,6 +347,9 @@ A.goodbye = () => R(`Thanks for stopping by! If you'd like to get in touch with 
 const jobLine = (j) => `**${j.role}**, ${j.company}${j.location ? ` (${j.location})` : ""} — ${period(j)}${j.current ? "" : ` (about ${monthsInclusive(j.start, j.end)} months)`}`;
 A.current_role = (c) => {
   const j = experience[0];
+  if (/\b(tech|stack|tools?|technolog\w*|frameworks?|uses?)\b/.test(c.t)) {
+    return R(`At Maaze, Ashish works with **Azure AI Document Intelligence**, **Azure OpenAI (GPT-5 mini)**, **YOLOv5** object detection and tracking, and **Python**, building the ${j.items[0].name} and ${j.items[1].name}.`, ["Experience", "Skills"], { ents: [ENT.find((e) => e.id === "c-maaze")] });
+  }
   const yn = c.yn && /\b(employed|working|work|have a job|has a job|got a job|jobless|unemployed)\b/.test(c.t);
   return R(`${yn ? "Yes — " : ""}Ashish currently works as ${j.role} at ${j.company} (since ${j.start}), building the ${j.items[0].name} and ${j.items[1].name}.`, ["Experience"], { ents: [ENT.find((e) => e.id === "c-maaze")] });
 };
@@ -408,7 +411,7 @@ A.project_detail = (c) => {
   return R(out.join("\n\n"), ["Projects", "Experience"], { ents: es });
 };
 
-A.achievements = (c = {}) => R(`${c.qtype === "howmany" ? `Ashish has **${achievements.length} hackathon results** on his resume (plus a patent):` : "Ashish's achievements:"}\n${bullets(achievements.map((a) => `**${a.title}** — ${a.detail}`))}\n- **Patent** — ${patent.title} (${patent.office}, ${patent.year})`, ["Projects", "Patent"]);
+A.achievements = (c = {}) => R(`${/\b(first|1st|gold)\b/.test(c.t || "") ? "No first-place finish is listed on his resume — his best result is **National 3rd Place** (WealthMaps, Fueled Contest 2.0). " : ""}${c.qtype === "howmany" ? `Ashish has **${achievements.length} hackathon results** on his resume (plus a patent):` : "Ashish's achievements:"}\n${bullets(achievements.map((a) => `**${a.title}** — ${a.detail}`))}\n- **Patent** — ${patent.title} (${patent.office}, ${patent.year})`, ["Projects", "Patent"]);
 
 A.patent = (c) => {
   const paper = /\b(paper|papers|research|publications?|published|journal)\b/.test(c.t);
@@ -607,7 +610,7 @@ A.not_stated = (c) => R(nsText(notStatedFor(c) || NOT_STATED[0], c), ["About", "
 A.case_study = (c) => {
   const realQ = c.yn && /\b(real|actual|genuine|client|confidential|true|authentic)\b/.test(c.t);
   const lead = realQ ? "No — the data in it is illustrative and fictional (real client documents are confidential). " : "";
-  return R(`${lead}The **Case Study** section is an illustrative demo of Ashish's Insurance Document Extraction work at ${cur.short}: ${join(caseStudy.stages)}. The sample shown (${caseStudy.sample}) uses fictional data — ${caseStudy.note.split(". ")[1].toLowerCase()}`, ["Case Study", "Experience"], { ents: [ENT.find((e) => e.id === "c-maaze")] });
+  return R(`${lead}The **Case Study** section is an illustrative demo of Ashish's Insurance Document Extraction work at ${cur.short}: ${caseStudy.stages.join("; ")}. The sample shown (${caseStudy.sample}) uses fictional data — ${caseStudy.note.split(". ")[1].toLowerCase()}`, ["Case Study", "Experience"], { ents: [ENT.find((e) => e.id === "c-maaze")] });
 };
 
 // "did he work at Google?" — an employer not on the resume.
@@ -682,7 +685,7 @@ const INTENTS = [
     boost: (c) => (c.ents.length && !/ashish| he | him /.test(c.pad) ? -4 : 0) + (c.ents.length ? -3 : 0)
       + (/ (kind|type|sort) of (engineer|developer|professional|person|guy|profile|candidate) | like as an? (engineer|developer|person|candidate) /.test(c.pad) && !c.ents.length ? 8 : 0) },
   { id: "current_role", w: { currently: 4, current: 3, present: 2, employed: 5, employer: 4, job: 2, working: 2, workplace: 5, designation: 5, occupation: 5, profession: 5, presently: 4, unemployed: 5, jobless: 5 },
-    p: { "where does he work": 7, "where does ashish work": 7, "where do you work": 7, "where is he working": 7, "where is he employed": 7, "what does he do": 5, "what do you do": 5, "what is he doing": 5, "what is his role": 6, "what is his job": 6, "what is your role": 6, "what is your job": 6, "job title": 6, "right now": 3, "at the moment": 3, "his company": 3, "which company": 4, "what company": 4, "for a living": 6, "does he have a job": 6, "has he got a job": 6, "is he working": 6, "is ashish working": 6, "is he working somewhere": 7, "is ashish working somewhere": 7, "does he work anywhere": 7, "does he work somewhere": 7, "is he employed": 7, "is he unemployed": 7, "his position": 3, "his role": 3, "current role": 6, "current job": 6, "what is he up to": 4, "up to": 3, "lately": 4, "these days": 5, "recently": 3, "doing now": 4, "what does he do now": 7, "what is ashish doing": 5, "who does he work for": 7, "where is ashish working": 7, "who is his employer": 7, "his work": 2 },
+    p: { "where does he work": 7, "where does ashish work": 7, "where do you work": 7, "where is he working": 7, "where is he employed": 7, "what does he do": 5, "what do you do": 5, "what is he doing": 5, "what is his role": 6, "what is his job": 6, "what is your role": 6, "what is your job": 6, "job title": 6, "right now": 3, "at the moment": 3, "his company": 3, "which company": 4, "what company": 4, "for a living": 6, "at work": 6, "use at work": 8, "stack at work": 8, "tech at maaze": 8, "stack at maaze": 8, "use at maaze": 8, "does he have a job": 6, "has he got a job": 6, "is he working": 6, "is ashish working": 6, "is he working somewhere": 7, "is ashish working somewhere": 7, "does he work anywhere": 7, "does he work somewhere": 7, "is he employed": 7, "is he unemployed": 7, "his position": 3, "his role": 3, "current role": 6, "current job": 6, "what is he up to": 4, "up to": 3, "lately": 4, "these days": 5, "recently": 3, "doing now": 4, "what does he do now": 7, "what is ashish doing": 5, "who does he work for": 7, "where is ashish working": 7, "who is his employer": 7, "his work": 2 },
     boost: (c) => (hasEnt(c, "company") ? -4 : 0) },
   { id: "company", w: {}, boost: (c) => (hasEnt(c, "company") ? 6 : 0) },
   { id: "experience", w: { experience: 3, career: 4, professional: 3, employment: 4, internships: 3, jobs: 4, roles: 3, companies: 4, previously: 3, worked: 2, tenure: 4, duration: 3, seniority: 3 },
@@ -714,7 +717,7 @@ const INTENTS = [
   { id: "project_detail", w: {}, boost: (c) => (hasEnt(c, "project") ? 6 : 0) },
   { id: "projects_by_tech", w: {}, boost: (c) => (hasEnt(c, "skill", "field") && projWord.test(c.pad) ? 8 : 0) + (hasEnt(c, "skill", "field") && / (which|what) (project|projects|work|ones) /.test(c.pad) ? 3 : 0) },
   { id: "achievements", w: { achievements: 6, achievement: 6, awards: 6, award: 6, hackathons: 6, hackathon: 6, win: 3, wins: 4, won: 4, winner: 5, prize: 5, prizes: 5, rank: 5, ranking: 5, ranked: 5, podium: 5, recognition: 5, honors: 5, accomplishments: 6, accomplishment: 6, trophy: 4, medals: 4, medal: 4, competitions: 5, competition: 5, contests: 4, contest: 3, achieved: 5, accolades: 6, finalist: 5, victories: 5 },
-    p: { "national rank": 8, "did he win": 7, "did you win": 7, "has he won": 7, "any awards": 8, "hackathon wins": 8, "hackathon results": 8, "third place": 6, "3rd place": 6, "top 10": 5, "most innovative": 5, "what has he achieved": 8, "proud of": 3 },
+    p: { "national rank": 8, "come first": 8, "came first": 8, "first place": 8, "1st place": 8, "first prize": 8, "win first": 8, "gold medal": 6, "did he win": 7, "did you win": 7, "has he won": 7, "any awards": 8, "hackathon wins": 8, "hackathon results": 8, "third place": 6, "3rd place": 6, "top 10": 5, "most innovative": 5, "what has he achieved": 8, "proud of": 3 },
     boost: (c) => (hasEnt(c, "project", "company") ? -2 : 0) + (hasEnt(c, "activity") ? -3 : 0) + (/\b(organi[sz]\w*|hosted|coordinat\w*|volunteer\w*)\b/.test(c.t) ? -6 : 0) },
   { id: "patent", w: { patent: 4, patents: 4, publications: 6, publication: 6, published: 4, research: 4, papers: 5, paper: 4, journal: 5, ip: 2, innovation: 2, invention: 4, inventions: 4, arxiv: 5, scholar: 4, citations: 5 }, p: { "intellectual property": 7, "research paper": 8, "research papers": 8, "any research": 7, "any publications": 8, "published any": 7, "has he published": 8, "smart stream": 7 }, boost: (c) => (hasEnt(c, "patent") ? 5 : 0) },
   { id: "edu_overall", w: { education: 5, educational: 5, qualifications: 6, qualification: 6, academics: 6, academic: 4, degree: 4, degrees: 4, college: 4, schooling: 5, studies: 4, studied: 3, study: 3, student: 3, btech: 4, graduate: 2, university: 3, school: 3, major: 1 }, p: { "educational background": 8, "academic background": 8 },
